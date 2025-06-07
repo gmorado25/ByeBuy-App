@@ -12,12 +12,12 @@ const HomeScreen = () => {
       
       <Button
         title="Work-to-Afford Calculator"
-        onPress={() => router.push('/workCalculatorTab')}
+        onPress={() => router.push('./WorkCalculatorTab')}
       />
       
       <Button
         title="Time-Value Investment Simulator"
-        onPress={() => router.push('/investmentSimulatorTab')}
+        onPress={() => router.push('./InvestmentSimulatorTab')}
       />
       
       <Button
