@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    backgroundColor: '#111827'
   },
   link: {
     marginTop: 15,

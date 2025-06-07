@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, ScrollView } from 'react-native';
-import { compoundInterest } from '../utils/compoundInterest';
+import { Button, ScrollView, Text, TextInput } from 'react-native';
 import InvestmentChart from '../components/InvestmentChart';
+import { compoundInterest } from '../utils/compoundInterest';
+import { styles } from './InvestmentSimulatorScreen.styles';
 
 const InvestmentSimulatorScreen = () => {
   const [currentAge, setCurrentAge] = useState('');
@@ -43,11 +44,5 @@ const InvestmentSimulatorScreen = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { padding: 20 },
-  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-  input: { borderWidth: 1, borderColor: '#ccc', marginBottom: 10, padding: 10 },
-});
 
 export default InvestmentSimulatorScreen;

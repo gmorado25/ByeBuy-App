@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Button, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
 import { useRouter } from 'expo-router';
+import React from 'react';
+import { Button, StyleSheet, View } from 'react-native';
+import { Text } from 'react-native-paper';
 
 const HomeScreen = () => {
   const router = useRouter();
@@ -12,12 +12,12 @@ const HomeScreen = () => {
       
       <Button
         title="Work-to-Afford Calculator"
-        onPress={() => router.push('../WorkCalculatorTab')}
+        onPress={() => router.push('/WorkCalculatorTab')}
       />
       
       <Button
         title="Time-Value Investment Simulator"
-        onPress={() => router.push('../InvestmentSimulatorTab')}
+        onPress={() => router.push('/InvestmentSimulatorTab')}
       />
       
       <Button

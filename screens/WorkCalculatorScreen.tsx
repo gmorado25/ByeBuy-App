@@ -1,66 +1,97 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, ScrollView } from 'react-native';
-import { calculateWorkHours } from '../utils/calculator';
+import { Button, ScrollView, Text, TextInput, View } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+import { styles } from './WorkCalculatorScreen.styles';
 
 const WorkCalculatorScreen = () => {
-  const [salary, setSalary] = useState('');
-  const [rateType, setRateType] = useState<'monthly' | 'hourly' | 'daily'>('hourly');
-  const [products, setProducts] = useState([{ name: 'Product', price: '' }]);
-  const [monthlyExpenses, setMonthlyExpenses] = useState('');
-  const [result, setResult] = useState<string | null>(null);
+  const [salaryInput, setSalaryInput] = useState('');
+  const [salaryType, setSalaryType] = useState<'hourly' | 'annual'>('hourly');
+  const [products, setProducts] = useState([{ name: '', price: '' }]);
+  const [resultMessage, setResultMessage] = useState<string | null>(null);
 
   const onCalculate = () => {
-    const parsedProducts = products.map(p => ({ ...p, price: parseFloat(p.price || '0') }));
-    const hours = calculateWorkHours({
-      salary: parseFloat(salary),
-      rateType,
-      products: parsedProducts,
-      monthlyExpenses: parseFloat(monthlyExpenses || '0'),
-    });
-    setResult(`${hours} hours of work needed`);
+    const salary = parseFloat(salaryInput);
+    if (isNaN(salary)) {
+      setResultMessage('Please enter a valid salary.');
+      return;
+    }
+
+    const hourlyRate = salaryType === 'hourly' ? salary : salary / 2080;
+    const totalCost = products.reduce((sum, p) => sum + parseFloat(p.price || '0'), 0);
+    const hoursNeeded = totalCost / hourlyRate;
+
+    let comment = '';
+    if (hoursNeeded > 40) comment = '⏳ That’s a full work week! Worth it?';
+    else if (hoursNeeded > 20) comment = '🤔 That’s a big time commitment.';
+    else if (hoursNeeded > 5) comment = '💸 Not bad. Think about it.';
+    else comment = '🎉 That’s affordable in work time!';
+
+    setResultMessage(`${hoursNeeded.toFixed(1)} hours of work needed. ${comment}`);
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>🧮 Work-to-Afford</Text>
+      <Text style={styles.header}>How many hours does this cost?</Text>
 
-      <Text>Salary ({rateType}):</Text>
-      <TextInput style={styles.input} keyboardType="numeric" value={salary} onChangeText={setSalary} />
+      <Text style={styles.label}>Salary Type</Text>
+      <View style={styles.toggleContainer}>
+        <Button title="Hourly" onPress={() => setSalaryType('hourly')} color={salaryType === 'hourly' ? '#3B82F6' : '#999'} />
+        <Button title="Annual" onPress={() => setSalaryType('annual')} color={salaryType === 'annual' ? '#3B82F6' : '#999'} />
+      </View>
 
-      <Text>Monthly Expenses (Optional):</Text>
-      <TextInput style={styles.input} keyboardType="numeric" value={monthlyExpenses} onChangeText={setMonthlyExpenses} />
+      <Text style={styles.label}>
+        {salaryType === 'hourly' ? 'Hourly Rate' : 'Annual Salary'}
+      </Text>
+      <TextInput
+        placeholder="e.g., 25 or 60000"
+        keyboardType="numeric"
+        value={salaryInput}
+        onChangeText={setSalaryInput}
+        style={styles.input}
+        placeholderTextColor="#aaa"
+      />
 
       {products.map((product, index) => (
         <View key={index}>
-          <Text>Product Name:</Text>
-          <TextInput style={styles.input} value={product.name} onChangeText={name => {
-            const newProducts = [...products];
-            newProducts[index].name = name;
-            setProducts(newProducts);
-          }} />
-
-          <Text>Price:</Text>
-          <TextInput style={styles.input} keyboardType="numeric" value={product.price} onChangeText={price => {
-            const newProducts = [...products];
-            newProducts[index].price = price;
-            setProducts(newProducts);
-          }} />
+          <Text style={styles.label}>Product Name</Text>
+          <TextInput
+            placeholder="e.g., iPhone"
+            value={product.name}
+            onChangeText={(name) => {
+              const newProducts = [...products];
+              newProducts[index].name = name;
+              setProducts(newProducts);
+            }}
+            style={styles.input}
+            placeholderTextColor="#aaa"
+          />
+          <Text style={styles.label}>Price</Text>
+          <TextInput
+            placeholder="e.g., 999"
+            keyboardType="numeric"
+            value={product.price}
+            onChangeText={(price) => {
+              const newProducts = [...products];
+              newProducts[index].price = price;
+              setProducts(newProducts);
+            }}
+            style={styles.input}
+            placeholderTextColor="#aaa"
+          />
         </View>
       ))}
 
       <Button title="Add Another Product" onPress={() => setProducts([...products, { name: '', price: '' }])} />
+      <View style={{ height: 10 }} />
       <Button title="Calculate" onPress={onCalculate} />
 
-      {result && <Text style={styles.result}>{result}</Text>}
+      {resultMessage && (
+        <Animated.View entering={FadeInUp.duration(500)} style={styles.resultBox}>
+          <Text style={styles.resultText}>{resultMessage}</Text>
+        </Animated.View>
+      )}
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { padding: 20 },
-  input: { borderWidth: 1, borderColor: '#ccc', marginBottom: 10, padding: 10 },
-  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-  result: { fontSize: 20, marginTop: 20, color: 'green' },
-});
 
 export default WorkCalculatorScreen;

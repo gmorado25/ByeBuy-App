@@ -19,7 +19,6 @@ export default function InvestmentChart({ data }: InvestmentChartProps) {
       width={320}
       height={220}
       chartConfig={{
-        backgroundColor: "#fff",
         backgroundGradientFrom: "#fff",
         backgroundGradientTo: "#eee",
         decimalPlaces: 2,

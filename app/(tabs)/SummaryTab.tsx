@@ -1,6 +1,6 @@
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
 import { useUserStore } from '@/hooks/useUserStore';
 import { compoundInterest } from '@/utils/compoundInterest';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 
 export default function SummaryTab() {
   const { savedAmount } = useUserStore();
