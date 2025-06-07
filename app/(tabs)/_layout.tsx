@@ -5,7 +5,7 @@ export default function TabLayout() {
   return (
     <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: '#3B82F6' }}>
       <Tabs.Screen
-        name="index"
+        name="SummaryTab"
         options={{
           title: 'Summary',
           tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
