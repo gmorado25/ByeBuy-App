@@ -81,11 +81,11 @@
 import { Session } from '@supabase/supabase-js';
 import { useRouter } from 'expo-router';
 import React, {
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
 } from 'react';
 import { supabase } from '../services/supabase';
  
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
  
       if (session) {
-        router.replace('/(tabs)'); // ← change if your main app screen differs
+        router.replace('/home'); // ← change if your main app screen differs
       }
     };
  
@@ -126,7 +126,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
  
       if (session) {
-        router.replace('/(tabs)');
+        router.replace('/home');
       } else {
         router.replace('/login');
       }

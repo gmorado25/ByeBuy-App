@@ -1,7 +1,8 @@
 import { Button, Input } from '@rneui/themed'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { Alert, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+import Toast from 'react-native-toast-message'
 import { supabase } from '../services/supabase'
 
 export default function AuthForm() {
@@ -11,21 +12,60 @@ export default function AuthForm() {
   const [loading, setLoading] = useState(false)
 
   const signInEmail = async () => {
+    if (!email || !password) {
+      Toast.show({
+        type: 'error',
+        text1: 'Email and password are required',
+      });
+      return;
+    }
+
     setLoading(true)
     const trimmedEmail = email.trim()
     const { error } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password })
     setLoading(false)
-    error ? Alert.alert('Login error', error.message) : router.replace('/home')
+
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Login failed',
+        text2: error.message,
+      });
+    } else {
+      Toast.show({
+        type: 'success',
+        text1: 'Login successful',
+      });
+      router.replace('/home');
+    }
   }
 
   const signUpEmail = async () => {
+    if (!email || !password) {
+      Toast.show({
+        type: 'error',
+        text1: 'Email and password are required',
+      });
+      return;
+    }
+
     setLoading(true)
     const trimmedEmail = email.trim()
     const { error } = await supabase.auth.signUp({ email: trimmedEmail, password })
-    setLoading(false)
-    error
-      ? Alert.alert('Signup error', error.message)
-      : Alert.alert('Check your inbox to confirm!')
+
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Signup failed',
+        text2: error.message,
+      });
+    } else {
+      Toast.show({
+        type: 'success',
+        text1: 'Signup successful',
+        text2: 'Check your inbox to confirm!',
+      });
+    }
   }
 
   return (

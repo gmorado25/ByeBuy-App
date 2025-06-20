@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from '../contexts/AuthContext';
+import Toast from 'react-native-toast-message';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -30,6 +31,7 @@ export default function RootLayout() {
               <Stack.Screen name="not-found" />
             </Stack>
             <StatusBar style="auto" />
+            <Toast />
           </ThemeProvider>
         </GestureHandlerRootView>
       </SafeAreaProvider>

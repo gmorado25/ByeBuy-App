@@ -1,13 +1,25 @@
 import ProtectedRoute from '@/components/ProtectedRoute';
-import React, { useState } from 'react';
+import { useUser } from '@/contexts/UserContext';
+import React, { useEffect, useState } from 'react';
 import { Button, ScrollView, Text, TextInput, View } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { styles } from './WorkCalculatorScreen.styles';
+
 const WorkCalculatorScreen = () => {
   const [salaryInput, setSalaryInput] = useState('');
   const [salaryType, setSalaryType] = useState<'hourly' | 'annual'>('hourly');
   const [products, setProducts] = useState([{ name: '', price: '' }]);
   const [resultMessage, setResultMessage] = useState<string | null>(null);
+  const { userData, setUserData } = useUser();
+  type TrackerKey = 'spent' | 'saved' | 'invested';
+
+  useEffect(() => {
+    if (!salaryInput && userData?.postTaxSalary) {
+      setSalaryInput((userData.postTaxSalary / 2080).toFixed(2));
+      setSalaryType('hourly');
+    }
+  }, []);
+
   const onCalculate = () => {
     const salary = parseFloat(salaryInput);
     if (isNaN(salary)) {
@@ -24,6 +36,13 @@ const WorkCalculatorScreen = () => {
     else comment = '🎉 That’s affordable in work time!';
     setResultMessage(`${hoursNeeded.toFixed(1)} hours of work needed. ${comment}`);
   };
+
+  const updateTracker = (key: TrackerKey) => {
+    const totalCost = products.reduce((sum, p) => sum + parseFloat(p.price || '0'), 0);
+    const current = (userData[key] as number | undefined) || 0;
+    setUserData({ ...userData, [key]: current + totalCost });
+  };
+
   return (
     <ProtectedRoute>
       <ScrollView style={styles.container}>
@@ -81,8 +100,14 @@ const WorkCalculatorScreen = () => {
             <Text style={styles.resultText}>{resultMessage}</Text>
           </Animated.View>
         )}
+
+        <Button title="Spend" onPress={() => updateTracker('spent')} />
+        <Button title="Save" onPress={() => updateTracker('saved')} />
+        <Button title="Invest" onPress={() => updateTracker('invested')} />
+
       </ScrollView>
     </ProtectedRoute>
   );
 };
+
 export default WorkCalculatorScreen;

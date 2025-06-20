@@ -1,32 +1,61 @@
-// import AuthForm from '../components/AuthForm'
-// export default function AuthPage() {
-//   return <AuthForm />
-// }
 import { Button, Input } from '@rneui/themed';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { supabase } from '../services/supabase';
+
 export default function AuthForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
   const signInEmail = async () => {
     setLoading(true);
     const trimmedEmail = email.trim();
     const { error } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password });
     setLoading(false);
-    error ? Alert.alert('Login error', error.message) : router.replace('/(tabs)');
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Login failed',
+        text2: error.message || 'Unable to sign in. Please check your credentials.',
+      });
+      return;
+    } else {
+      Toast.show({
+        type: 'success',
+        text1: 'Login successful',
+      });
+      setTimeout(() => {
+        router.replace('/(tabs)');
+      }, 500);
+    }
   };
   const signUpEmail = async () => {
+    if (!email || !password) {
+      Toast.show({
+        type: 'error',
+        text1: 'Email and password are required',
+      });
+      return;
+    }
     setLoading(true);
     const trimmedEmail = email.trim();
     const { error } = await supabase.auth.signUp({ email: trimmedEmail, password });
     setLoading(false);
     error
-      ? Alert.alert('Signup error', error.message)
-      : Alert.alert('Check your inbox to confirm!');
+      ? Toast.show({
+        type: 'error',
+        text1: 'Signup error',
+        text2: error.message,
+      })
+      : Toast.show({
+        type: 'success',
+        text1: 'Signup successful',
+        text2: 'Check your inbox to confirm!',
+      });
   };
   return (
     <View style={styles.container}>
