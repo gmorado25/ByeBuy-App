@@ -2,27 +2,21 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
+  Text, TextInput, TouchableOpacity
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { useUser } from '../../contexts/UserContext';
 import OnboardingScreenLayout from './OnboardingScreenLayout';
 
-export default function NameScreen() {
+export default function RetirementAgeScreen() {
   const router = useRouter();
   const { userData, setUserData } = useUser();
-  const [name, setName] = useState(userData?.name || '');
+  const [retireAge, setRetireAge] = useState(userData?.retirementAge?.toString() || '');
 
-  // useEffect(() => {
-  //   setUserData((prev) => ({ ...prev, name }));
-  // }, [name]);
-  
   // const handleNext = async () => {
-  //   const trimmedName = name.trim();
-  //   if (!trimmedName) return;
+  //   if (!retireAge) return;
 
-  //   const updatedData = { ...userData, name: trimmedName };
+  //   const updatedData = { ...userData, retireAge };
   //   setUserData(updatedData);
 
   //   try {
@@ -35,42 +29,45 @@ export default function NameScreen() {
 
   //     await syncUserProfile(updatedData, session);
 
-  //     Toast.show({ type: 'success', text1: 'Name saved successfully!' });
-  //     router.push('/onboarding/BirthdayScreen');
+  //     Toast.show({ type: 'success', text1: 'Retirement age saved!' });
+  //     router.push('/onboarding/SalaryScreen');
   //   } catch (err) {
-  //     Toast.show({ type: 'error', text1: 'Failed to save name. Try again.' });
-  //     console.error('[NameScreen] sync error:', err);
+  //     Toast.show({ type: 'error', text1: 'Failed to save retirement age.' });
+  //     console.error('[RetirementAgeScreen] sync error:', err);
   //   }
   // };
   const handleNext = () => {
-    const trimmedName = name.trim();
-    if (!trimmedName) return;
+    const age = parseInt(retireAge);
+    if (!retireAge || isNaN(age) || age < 30 || age > 100) {
+      Toast.show({ type: 'error', text1: 'Enter a valid retirement age.' });
+      return;
+    }
 
-    setUserData(prev => ({ ...prev, name: trimmedName }));
-    router.push('/onboarding/BirthdayScreen');
+    setUserData(prev => ({
+      ...prev,
+      retirementAge: age,
+    }));
+    router.push('/onboarding/SalaryScreen');
   };
 
   return (
     <OnboardingScreenLayout
-      currentStep={1}
+      currentStep={3}
       totalSteps={5}
       onBack={() => router.back()}
     >
-      <Text style={styles.label}>What’s your name?</Text>
+      <Text style={styles.label}>What age do you plan to retire?</Text>
       <TextInput
-        placeholder="Enter your name"
-        value={name}
-        onChangeText={setName}
+        placeholder="e.g., 65"
+        keyboardType="numeric"
+        value={retireAge}
+        onChangeText={setRetireAge}
         style={styles.input}
-        returnKeyType="done"
-        autoCapitalize="words"
-        autoCorrect={false}
-        textContentType="name"
       />
       <TouchableOpacity
         onPress={handleNext}
-        disabled={!name.trim()}
-        style={[styles.button, !name.trim() && { backgroundColor: '#ddd' }]}
+        disabled={!retireAge}
+        style={[styles.button, !retireAge && { backgroundColor: '#ddd' }]}
       >
         <Text style={styles.buttonText}>Next</Text>
       </TouchableOpacity>

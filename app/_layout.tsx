@@ -5,8 +5,8 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AuthProvider } from '../contexts/AuthContext';
 import Toast from 'react-native-toast-message';
+import { AuthProvider } from '../contexts/AuthContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -25,7 +25,7 @@ export default function RootLayout() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           {/* <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}> */}
           <ThemeProvider value={DefaultTheme}>
-            <Stack>
+            <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="not-found" />
