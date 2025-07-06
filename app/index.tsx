@@ -1,16 +1,35 @@
 import { Redirect } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useUser } from '../contexts/UserContext';
+import { supabase } from '../services/supabase';
 
 export default function Index() {
   const { session } = useAuth();
-  const { userData } = useUser();
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
-  if (!session) return <Redirect href="/login" />;
+  useEffect(() => {
+    const checkProfile = async () => {
+      if (!session || !session.user?.id) {
+        setRedirectTo('/login');
+        return;
+      }
 
-  if (!userData?.hasCompletedOnboarding) {
-    return <Redirect href="/onboarding/WelcomeScreen" />;
-  }
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('completed_onboarding')
+        .eq('id', session.user.id)
+        .single();
 
-  return <Redirect href="/home" />;
+      if (error || !profile?.completed_onboarding) {
+        setRedirectTo('/onboarding/WelcomeScreen');
+      } else {
+        setRedirectTo('/home');
+      }
+    };
+
+    checkProfile();
+  }, [session]);
+
+  if (!redirectTo) return null;
+  return <Redirect href={redirectTo} />;
 }

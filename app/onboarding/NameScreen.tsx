@@ -1,3 +1,4 @@
+import { saveData } from '@/services/storage';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -14,39 +15,14 @@ export default function NameScreen() {
   const { userData, setUserData } = useUser();
   const [name, setName] = useState(userData?.name || '');
 
-  // useEffect(() => {
-  //   setUserData((prev) => ({ ...prev, name }));
-  // }, [name]);
-  
-  // const handleNext = async () => {
-  //   const trimmedName = name.trim();
-  //   if (!trimmedName) return;
-
-  //   const updatedData = { ...userData, name: trimmedName };
-  //   setUserData(updatedData);
-
-  //   try {
-  //     const {
-  //       data: { session },
-  //       error,
-  //     } = await supabase.auth.getSession();
-
-  //     if (!session) throw new Error('No session found');
-
-  //     await syncUserProfile(updatedData, session);
-
-  //     Toast.show({ type: 'success', text1: 'Name saved successfully!' });
-  //     router.push('/onboarding/BirthdayScreen');
-  //   } catch (err) {
-  //     Toast.show({ type: 'error', text1: 'Failed to save name. Try again.' });
-  //     console.error('[NameScreen] sync error:', err);
-  //   }
-  // };
-  const handleNext = () => {
+  const handleNext = async () => {
     const trimmedName = name.trim();
     if (!trimmedName) return;
 
+    const updatedData = { ...userData, name: trimmedName };
     setUserData(prev => ({ ...prev, name: trimmedName }));
+    await saveData('userData', JSON.stringify(updatedData));
+    console.log('[NameScreen] Saved userData:', updatedData);
     router.push('/onboarding/BirthdayScreen');
   };
 

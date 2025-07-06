@@ -1,3 +1,4 @@
+import { getData, saveData } from '@/services/storage';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -13,40 +14,31 @@ export default function RetirementAgeScreen() {
   const { userData, setUserData } = useUser();
   const [retireAge, setRetireAge] = useState(userData?.retirementAge?.toString() || '');
 
-  // const handleNext = async () => {
-  //   if (!retireAge) return;
-
-  //   const updatedData = { ...userData, retireAge };
-  //   setUserData(updatedData);
-
-  //   try {
-  //     const {
-  //       data: { session },
-  //       error,
-  //     } = await supabase.auth.getSession();
-
-  //     if (!session) throw new Error('No session found');
-
-  //     await syncUserProfile(updatedData, session);
-
-  //     Toast.show({ type: 'success', text1: 'Retirement age saved!' });
-  //     router.push('/onboarding/SalaryScreen');
-  //   } catch (err) {
-  //     Toast.show({ type: 'error', text1: 'Failed to save retirement age.' });
-  //     console.error('[RetirementAgeScreen] sync error:', err);
-  //   }
-  // };
-  const handleNext = () => {
+  const handleNext = async () => {
     const age = parseInt(retireAge);
     if (!retireAge || isNaN(age) || age < 30 || age > 100) {
       Toast.show({ type: 'error', text1: 'Enter a valid retirement age.' });
       return;
     }
 
-    setUserData(prev => ({
-      ...prev,
+    const stored = await getData('userData');
+    let baseData = userData;
+    if (stored) {
+      try {
+        baseData = JSON.parse(stored);
+      } catch (err) {
+        console.error('Failed to parse stored userData:', err);
+      }
+    }
+
+    const updatedData = {
+      ...baseData,
       retirementAge: age,
-    }));
+    };
+
+    setUserData(updatedData);
+    await saveData('userData', JSON.stringify(updatedData));
+    console.log('[RetirementScreen] Saved userData:', updatedData);
     router.push('/onboarding/SalaryScreen');
   };
 

@@ -1,172 +1,4 @@
-// import { useRouter } from 'expo-router';
-// import { useState } from 'react';
-// import {
-//   StyleSheet,
-//   Text, TextInput, TouchableOpacity
-// } from 'react-native';
-// import Toast from 'react-native-toast-message';
-// import { useUser } from '../../contexts/UserContext';
-// import OnboardingScreenLayout from './OnboardingScreenLayout';
-
-// export default function SalaryScreen() {
-//   const router = useRouter();
-//   const { userData, setUserData } = useUser();
-//   const [salary, setSalary] = useState(userData?.salary?.toString() || '');
-
-//   const handleNext = () => {
-//     const gross = parseFloat(salary);
-//     if (isNaN(gross) || gross < 1000 || gross > 1000000) {
-//       Toast.show({ type: 'error', text1: 'Enter a valid annual salary.' });
-//       return;
-//     }
-
-//     const postTax = gross * 0.75;
-//     setUserData((prev) => ({ ...prev, salary: gross, postTaxSalary: postTax }));
-//     router.push('/onboarding/OnboardingCompleteScreen');
-//   };
-
-//   return (
-//     <OnboardingScreenLayout
-//       currentStep={4}
-//       totalSteps={5}
-//       onBack={() => router.back()}
-//     >
-//       <Text style={styles.label}>What’s your annual salary?</Text>
-//       <TextInput
-//         placeholder="e.g., 60000"
-//         keyboardType="numeric"
-//         value={salary}
-//         onChangeText={setSalary}
-//         style={styles.input}
-//       />
-//       <TouchableOpacity
-//         onPress={handleNext}
-//         disabled={!salary}
-//         style={[styles.button, !salary && { backgroundColor: '#ddd' }]}
-//       >
-//         <Text style={styles.buttonText}>Finish</Text>
-//       </TouchableOpacity>
-//     </OnboardingScreenLayout>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   label: { fontSize: 20, fontWeight: '600', marginBottom: 12 },
-//   input: {
-//     borderBottomWidth: 1,
-//     borderBottomColor: '#ccc',
-//     fontSize: 16,
-//     paddingVertical: 8,
-//     marginBottom: 24,
-//   },
-//   button: {
-//     backgroundColor: '#4a90e2',
-//     paddingVertical: 12,
-//     borderRadius: 8,
-//     alignItems: 'center',
-//   },
-//   buttonText: {
-//     color: '#fff',
-//     fontWeight: '600',
-//     fontSize: 16,
-//   },
-// });
-
-/*import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import {
-  StyleSheet,
-  Text, TextInput, TouchableOpacity
-} from 'react-native';
-import Toast from 'react-native-toast-message';
-import { useAuth } from '../../contexts/AuthContext';
-import { useUser } from '../../contexts/UserContext';
-import { syncUserProfile } from '../../services/syncUserData';
-import OnboardingScreenLayout from './OnboardingScreenLayout';
-
-export default function SalaryScreen() {
-  const router = useRouter();
-  const { userData, setUserData } = useUser();
-  const { session } = useAuth();
-  const [salary, setSalary] = useState(userData?.salary?.toString() || '');
-
-  const handleNext = async () => {
-    const gross = parseFloat(salary);
-    if (isNaN(gross) || gross < 1000 || gross > 1000000) {
-      Toast.show({ type: 'error', text1: 'Enter a valid annual salary.' });
-      return;
-    }
-
-    const postTax = gross * 0.75;
-    const updatedData = {
-      ...userData,
-      salary: gross,
-      postTaxSalary: postTax,
-      completed_onboarding: true,
-    };
-    setUserData(updatedData);
-
-    if (!session) {
-      Toast.show({ type: 'error', text1: 'Session missing. Try logging in again.' });
-      return;
-    }
-
-    try {
-      await syncUserProfile(updatedData, session);
-      router.push('/onboarding/OnboardingCompleteScreen');
-    } catch (err) {
-      console.error('Failed to sync profile:', err);
-      Toast.show({ type: 'error', text1: 'Failed to save profile data.' });
-    }
-  };
-
-  return (
-    <OnboardingScreenLayout
-      currentStep={4}
-      totalSteps={5}
-      onBack={() => router.back()}
-    >
-      <Text style={styles.label}>What’s your annual salary?</Text>
-      <TextInput
-        placeholder="e.g., 60000"
-        keyboardType="numeric"
-        value={salary}
-        onChangeText={setSalary}
-        style={styles.input}
-      />
-      <TouchableOpacity
-        onPress={handleNext}
-        disabled={!salary}
-        style={[styles.button, !salary && { backgroundColor: '#ddd' }]}
-      >
-        <Text style={styles.buttonText}>Finish</Text>
-      </TouchableOpacity>
-    </OnboardingScreenLayout>
-  );
-}
-
-const styles = StyleSheet.create({
-  label: { fontSize: 20, fontWeight: '600', marginBottom: 12 },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    fontSize: 16,
-    paddingVertical: 8,
-    marginBottom: 24,
-  },
-  button: {
-    backgroundColor: '#4a90e2',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
-  },
-});*/
-
+import { getData, saveData } from '@/services/storage';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -191,49 +23,7 @@ export default function SalaryScreen() {
   const { session } = useAuth();
   const [salary, setSalary] = useState(userData?.salary?.toString() || '');
   const [loading, setLoading] = useState(false);
-
-  // const handleNext = async () => {
-  //   const gross = parseFloat(salary);
-  //   if (isNaN(gross) || gross < 1000 || gross > 1000000) {
-  //     Toast.show({ type: 'error', text1: 'Enter a valid annual salary.' });
-  //     return;
-  //   }
-
-  //   const postTax = gross * 0.75;
-  //   const updatedData = {
-  //     ...userData,
-  //     salary: gross,
-  //     postTaxSalary: postTax,
-  //     hasCompletedOnboarding: true,
-  //   };
-
-  //   console.log('[🔵 SALARY] Updating user data before sync:', updatedData);
-  //   setLoading(true);
-  //   setUserData(updatedData);
-
-  //   try {
-  //     const {
-  //       data: { session },
-  //       error,
-  //     } = await supabase.auth.getSession();
-
-  //     if (!session) {
-  //       console.warn('No session found');
-  //       Toast.show({ type: 'error', text1: 'Session missing. Try logging in again.' });
-  //       return;
-  //     }
-
-  //     await syncUserProfile(updatedData, session);
-
-  //     Toast.show({ type: 'success', text1: 'Onboarding complete!' });
-  //     router.push('/onboarding/OnboardingCompleteScreen');
-  //   } catch (err) {
-  //     console.error('[❌ SYNC ERROR] Failed to sync profile:', err);
-  //     Toast.show({ type: 'error', text1: 'Failed to save profile data.' });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  
   const handleNext = async () => {
     const gross = parseFloat(salary);
     if (isNaN(gross) || gross < 1000 || gross > 1000000) {
@@ -241,14 +31,26 @@ export default function SalaryScreen() {
       return;
     }
 
+    const stored = await getData('userData');
+    let baseData = userData;
+    if (stored) {
+      try {
+        baseData = JSON.parse(stored);
+        console.log('[📦 Loaded userData from storage before sync]', baseData);
+      } catch (err) {
+        console.error('[LOAD ERROR] Failed to parse userData:', err);
+      }
+    }
+
     const updatedData = {
-      ...userData,
+      ...baseData,
       salary: gross,
       postTaxSalary: gross,
       hasCompletedOnboarding: true,
     };
 
     setUserData(updatedData);
+    await saveData('userData', JSON.stringify(updatedData));
     setLoading(true);
 
     try {
@@ -259,9 +61,9 @@ export default function SalaryScreen() {
         return;
       }
 
-      console.log('[🧠 FINAL CHECK] Syncing this payload:', updatedData); // ✅ Use this
+      console.log('[🧠 FINAL CHECK] Syncing this payload:', updatedData);
 
-      const result = await syncUserProfile(updatedData, session); // ✅ use updatedData
+      const result = await syncUserProfile(updatedData, session);
       if (result) {
         Toast.show({ type: 'success', text1: 'Onboarding complete!' });
         router.push('/onboarding/OnboardingCompleteScreen');
@@ -269,7 +71,7 @@ export default function SalaryScreen() {
         throw new Error('Sync failed');
       }
     } catch (err) {
-      console.error('[❌ SYNC ERROR] Failed to sync profile:', err);
+      console.error('[SYNC ERROR] Failed to sync profile:', err);
       Toast.show({ type: 'error', text1: 'Failed to save profile data.' });
     } finally {
       setLoading(false);

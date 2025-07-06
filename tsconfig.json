@@ -27,7 +27,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "app/onboarding/styles/onboardingStyles"  ],
   "exclude": [
     "node_modules"
   ],

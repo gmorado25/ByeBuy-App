@@ -1,3 +1,4 @@
+import { getData, saveData } from '@/services/storage';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -22,43 +23,8 @@ export default function BirthdayScreen() {
       setUserData((prev) => ({ ...prev, birthYear, age }));
     }
   }, [birthYear]);
-
-  //   const handleNext = async () => {
-  //   const year = parseInt(birthYear);
-  //   const currentYear = new Date().getFullYear();
-
-  //   if (!birthYear || isNaN(year) || year < 1900 || year > currentYear) {
-  //     Toast.show({ type: 'error', text1: 'Enter a valid birth year.' });
-  //     return;
-  //   }
-
-  //   const age = currentYear - year;
-  //   const formattedBirthDate = `${year}-01-01`;
-
-  //   const updatedData = {
-  //     ...userData,
-  //     birthYear: formattedBirthDate,
-  //     age,
-  //   };
-  //   setUserData(updatedData);
-
-  //   try {
-  //     const {
-  //       data: { session },
-  //     } = await supabase.auth.getSession();
-
-  //     if (!session) throw new Error('No session found');
-
-  //     await syncUserProfile(updatedData, session);
-
-  //     Toast.show({ type: 'success', text1: 'Birthday saved!' });
-  //     router.push('/onboarding/RetirementAgeScreen');
-  //   } catch (err) {
-  //     Toast.show({ type: 'error', text1: 'Failed to save birthday.' });
-  //     console.error('[BirthdayScreen] sync error:', err);
-  //   }
-  // };
-  /*const handleNext = () => {
+  
+  const handleNext = async () => {
     const year = parseInt(birthYear);
     const currentYear = new Date().getFullYear();
     if (!birthYear || isNaN(year) || year < 1900 || year > currentYear) {
@@ -66,34 +32,29 @@ export default function BirthdayScreen() {
       return;
     }
 
+    const stored = await getData('userData');
+    let baseData = userData;
+    if (stored) {
+      try {
+        baseData = JSON.parse(stored);
+      } catch (err) {
+        console.error('Failed to parse stored userData:', err);
+      }
+    }
+
     const age = currentYear - year;
 
-    setUserData(prev => ({
-      ...prev,
+    const updatedData = {
+      ...baseData,
       birthYear: year.toString(),
       age,
-    }));
+    };
 
+    setUserData(updatedData);
+    await saveData('userData', JSON.stringify(updatedData));
+    console.log('[🟡 BirthdayScreen] Saved userData:', updatedData);
     router.push('/onboarding/RetirementAgeScreen');
-  };*/
-  const handleNext = () => {
-  const year = parseInt(birthYear);
-  const currentYear = new Date().getFullYear();
-  if (!birthYear || isNaN(year) || year < 1900 || year > currentYear) {
-    Toast.show({ type: 'error', text1: 'Enter a valid birth year.' });
-    return;
-  }
-
-  const age = currentYear - year;
-
-  setUserData(prev => ({
-    ...prev,
-    birthYear: year.toString(),
-    age,
-  }));
-
-  router.push('/onboarding/RetirementAgeScreen');
-};
+  };
 
 
   return (
